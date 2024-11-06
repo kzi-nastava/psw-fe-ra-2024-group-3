@@ -54,7 +54,10 @@ export class CommentFormComponent implements OnChanges {
       username: this.username,
     };
     this.service.addComment(this.blogId, newComment).subscribe({
-      next: () => { this.commentUpdated.emit(); }
+      next: () => { this.commentUpdated.emit(); },
+      error: () => {
+        alert("Blog is CLOSED!");
+      }
     });
   }
 
@@ -65,7 +68,10 @@ export class CommentFormComponent implements OnChanges {
       editDate: new Date(),
     };
     this.service.updateComment(this.blogId, updatedComment).subscribe({
-      next: () => { this.commentUpdated.emit(); }
+      next: () => { this.commentUpdated.emit(); },
+      error: () => {
+        alert("Blog is CLOSED!");
+      }
     });
   }
 }

@@ -54,10 +54,12 @@ export class CommentComponent {
 
   getComments(): void {
     this.service.getComments(this.blogId).subscribe({
-      next: (result: PagedResults<Comment>) => {
-        this.comments = result.results;
+      next: (result: Comment[]) => {
+        this.comments = result;
+        console.log(result);
       },
       error: () => {
+        alert("Error fetching comments!");
       }
     })
   }
@@ -71,8 +73,6 @@ export class CommentComponent {
     this.selectedComment = comment;
     this.shouldRenderCommentForm = true;
     this.shouldEdit = true;
-    console.log("Username: ", this.username)
-    console.log('author id: ' + comment.authorId + ' & id: ' + this.id)
   }
 
   onAddClicked(): void {
