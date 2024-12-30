@@ -6,6 +6,75 @@
 }
 
 div {
+    width: 100%; /* Allow the form to take full width inside the modal */
+    max-width: 600px; /* Limit the width to match the modal size */
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* Reduce gap between fields for better spacing */
+    padding: 16px;
+    background-color: white; /* Keep the white background */
+    border-radius: 8px; /* Rounded corners for a cleaner look */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-height: 100%; /* Allow it to use all available modal height */
+    overflow-y: auto; /* Enable scrolling if form content overflows */
+    overflow-x: hidden;
+}
+
+/* Ensure form fields take up full width */
+mat-form-field {
+    width: 100%;
+}
+
+/* Adjust labels for better readability */
+mat-label {
+    font-size: 14px;
+    color: #333;
+}
+
+/* Style the input fields */
+mat-input {
+    font-size: 16px;
+    color: #333;
+}
+
+/* Style the image upload section */
+app-image-upload {
+    max-width: 80%; /* Ensure it fits neatly within the form */
+    height: auto; /* Keep aspect ratio intact */
+    margin-bottom: 16px;
+}
+
+/* Submit button styles */
+button[type="submit"] {
+    margin-top: 16px;
+    width: 100%; /* Buttons span full width */
+    padding: 8px 16px; /* Ensure a balanced button size */
+    font-size: 14px;
+}
+
+/* Add spacing between multiple buttons */
+button + button {
+    margin-top: 8px; /* Space between Done buttons (if multiple are shown) */
+}
+
+/* Image preview container */
+.image-preview {
+    max-width: 100%; /* Prevent image overflow */
+    max-height: 200px; /* Limit image height */
+    object-fit: cover; /* Maintain image aspect ratio */
+    border: 1px solid #ddd; /* Add a subtle border for separation */
+    border-radius: 4px; /* Rounded edges for better aesthetics */
+}
+
+/* Adjust flex settings to fit nicely in modal */
+div::-webkit-scrollbar {
+    width: 6px; /* Custom scrollbar for better UX */
+}
+div::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+}
+{
     display: flex;
     gap: 20px;
     flex-direction: column;

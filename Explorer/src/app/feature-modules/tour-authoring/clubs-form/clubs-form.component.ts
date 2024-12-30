@@ -63,7 +63,8 @@ export class ClubsFormComponent implements OnChanges {
       imageId: -1,
       image: "",
       memberIds: [],
-      invitationIds: []
+      invitationIds: [],
+      requestIds: []
     };
 
     this.imageService.uploadImage(this.selectedFile).subscribe((imageId: number) => {
@@ -93,7 +94,8 @@ export class ClubsFormComponent implements OnChanges {
       imageId: this.club.imageId, // Default to existing imageId
       image: this.club.image,
       memberIds: this.club.memberIds,
-      invitationIds: this.club.invitationIds
+      invitationIds: this.club.invitationIds,
+      requestIds: this.club.requestIds
     };
 
     club.id = this.club.id;

@@ -21,14 +21,23 @@ export class ClubsComponent implements OnInit {
   shouldRenderClubForm: boolean = false;
   shouldEdit: boolean = false;
   image: File;
-  tourists : Tourist[] = [] ; // List of tourists to display in modal
+  tourists : Tourist[] = [] ; // List of all tourists
+  touristsInv : Tourist[] = [] ; // List of tourists to display in modal
   isModalOpen = false;
   isLoading = false;
   members: Tourist[] = [];
   activeTab: string = 'invites';
+  reqMembers: Tourist[] = [];
 
   invitedClubs: Clubs[] = []; // Clubs that invited the logged-in tourist
   isInvitationModalOpen = false;
+  isClubFormModalOpen = false;
+  searchQuery: string = '';
+  filteredTourists = this.touristsInv;
+  filteredMembers = this.members;
+  filteredRequests = this.reqMembers;
+
+  
 
   user : User
 
@@ -110,6 +119,8 @@ export class ClubsComponent implements OnInit {
 
     // Load the tourists list (replace with your actual method)
     this.loadTourists();
+    this.loadMembers();
+    this.loadReqMembers();
   }
 
   closeModal(): void {
@@ -124,6 +135,8 @@ export class ClubsComponent implements OnInit {
         // Assuming PagedResults has a `results` array with the tourists
         this.tourists = response;
         console.log(this.tourists)
+        this.touristsInv = this.tourists.filter((t) => t.id !== this.user.id)
+        this.filteredTourists = this.touristsInv
       },
       error: (err) => {
         console.error('Failed to load tourists:', err);
@@ -143,9 +156,17 @@ export class ClubsComponent implements OnInit {
     alert(`Invited ${tourist.username} to club ${this.selectedClub?.name}`);
   }
 
-  loadMembers(): Tourist[] {
+  loadMembers(): void {
     this.members = this.tourists.filter(tourist => this.selectedClub.memberIds.includes(tourist.id));
-    return this.members
+    this.filteredMembers = [...this.members]
+    //
+    //return this.members
+  }
+
+  loadReqMembers(): void {
+    this.reqMembers = this.tourists.filter(tourist => this.selectedClub.requestIds.includes(tourist.id));
+    this.filteredRequests = [...this.reqMembers]
+    //return this.reqMembers
   }
 
 setActiveTab(tab: string) {
@@ -153,6 +174,9 @@ setActiveTab(tab: string) {
     if (tab === 'members' || this.members.length === 0) {
         this.loadMembers();
     }
+    if (tab === 'requests' || this.members.length === 0) {
+      this.loadReqMembers();
+  }
 }
 
 removeMember(member: Tourist) {
@@ -178,6 +202,11 @@ closeInvitationModal() {
   this.isInvitationModalOpen = false;
 }
 
+openInvitationModal() {
+  this.viewInvitations()
+  //this.isInvitationModalOpen = true;
+}
+
 acceptInvitation(clubId: number) {
   this.service.acceptInvitation(clubId).subscribe(() => {
     this.invitedClubs = this.invitedClubs.filter((club) => club.id !== clubId);
@@ -199,4 +228,72 @@ rejectInvitation(clubId: number) {
     this.invitedClubs = this.invitedClubs.filter((club) => club.id !== clubId);
   });
 }
+
+joinClub(clubId: number): void {
+  this.service.joinClub(clubId).subscribe({
+    next: () => {
+      this.getClubs();
+      //this.notificationService.notify({ message:'Club deleted successfully!', duration: 3000, notificationType: NotificationType.SUCCESS });
+    },
+    error: (err: any) => {
+      console.log(err);
+      this.notificationService.notify({ message:'Failed to request to join club. Please try again.', duration: 3000, notificationType: NotificationType.WARNING });
+    }
+  })
+}
+
+acceptRequest(clubId: number, reqMemberId: number) {
+  this.service.acceptRequest(clubId, reqMemberId).subscribe(() => {
+    // Find and update the selected club
+    this.selectedClub = this.clubs.find((club) => club.id === clubId);
+    console.log("trenutni klub")
+    console.log(this.selectedClub)
+    if (!this.selectedClub.memberIds) {
+      this.selectedClub.memberIds = [];
+  }
+    this.selectedClub.memberIds.push(reqMemberId); // Use `push` instead of `add`
+    this.selectedClub.requestIds.pop(reqMemberId); // 
+    this.reqMembers = this.reqMembers.filter((reqMember) => reqMember.id === reqMemberId) // 
+    //this.selectedClub.requestIds = this.selectedClub.requestIds.filter((id:number) => id === reqMemberId)
+    console.log(this.selectedClub)
+    this.loadMembers()
+    this.loadReqMembers()
+  });
+}
+
+denyRequest(clubId: number, reqMemberId: number) {
+  this.service.denyRequest(clubId, reqMemberId).subscribe(() => {
+    this.selectedClub.requestIds.pop(reqMemberId); // 
+    this.reqMembers = this.reqMembers.filter((reqMember) => reqMember.id === reqMemberId) //
+    this.loadReqMembers() 
+  });
+}
+
+openClubFormModal(club?: any) {
+  this.selectedClub = club || null;
+  this.shouldEdit = !!club;
+  this.isClubFormModalOpen = true;
+}
+
+closeClubFormModal() {
+  this.isClubFormModalOpen = false;
+}
+
+filterList(tab: string): void {
+  const query = this.searchQuery.toLowerCase();
+  if (tab === 'invites') {
+    this.filteredTourists = this.touristsInv.filter(tourist =>
+      tourist.username!.toLowerCase().includes(query)
+    );
+  } else if (tab === 'members') {
+    this.filteredMembers = this.members.filter(member =>
+      member.username!.toLowerCase().includes(query)
+    );
+  } else if (tab === 'requests') {
+    this.filteredRequests = this.reqMembers.filter(reqMember =>
+      reqMember.username!.toLowerCase().includes(query)
+    );
+  }
+}
+
 }
