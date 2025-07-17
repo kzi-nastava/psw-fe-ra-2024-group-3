@@ -10,7 +10,7 @@
   border-radius: 10px;
   text-align: center;
   animation: fadeIn 0.5s ease-in-out;
-  z-index: 1000;
+  z-index: 1110;
 }
 
 .modal h2 {

@@ -14,7 +14,7 @@
     [style.--page-index]="pages.length - i" 
     [class.flipped]="flippedPages.includes(i)"
     (click)="flipPage(i)"
-    [ngStyle]="i === 0 || i === pages.length - 1 ? { 'background-color': book?.bookColour } : { 'background-color':  '#ffffff' } "
+    [ngStyle]="i === 0 || i === pages.length - 1 ? { 'background-color': book.bookColour } : { 'background-color':  '#ffffff' } "
   >
  
     <div class="page-content">

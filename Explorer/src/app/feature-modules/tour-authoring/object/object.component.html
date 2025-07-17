@@ -10,6 +10,11 @@
             <hr>
             <div id="object-details">
                 <div class="card-container">
+                    <div class="card add-card">
+                        <button color="primary" [routerLink]="['/objectForm']" mat-icon-button matTooltip="Add new facility">
+                          <img src="assets/icons/add.png" alt="Add Icon"/>
+                      </button>                
+                      </div>
                     <div class="card" *ngFor="let obj of object">
                       <div class="card-content">
                         <img *ngIf="obj.image" [src]="obj.image" alt="{{ obj.image }}" class="card-image" />
@@ -27,11 +32,7 @@
                         </p>
                       </div>
                   </div>
-                  <div class="card add-card">
-                    <button color="primary" [routerLink]="['/objectForm']" mat-icon-button matTooltip="Add new facility">
-                      <img src="assets/icons/add.png" alt="Add Icon"/>
-                  </button>                
-                  </div>
+                  
             </div>
     </div>
 </div>

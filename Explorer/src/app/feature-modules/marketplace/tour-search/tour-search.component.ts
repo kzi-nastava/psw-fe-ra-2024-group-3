@@ -16,9 +16,20 @@ export class TourSearchComponent {
   noToursFound: boolean = false;
   isSearchModalOpen = false;
   searchCriteria: SearchByDistance = {
-    distance: 0,
-    latitude: 0, 
-    longitude: 0 
+    maxDistance: 0,
+    minDistance: 0,
+    distance: 0, // Dodano za maksimalnu udaljenost od odabrane lokacije
+      latitude: 0, 
+      longitude: 0,
+      keyPointName: '',
+      maxRating: 0,
+      minRating: 0,
+      maxPrice: 0,
+      minPrice: 0,
+      maxDuration: 0,
+      minDuration: 0,
+      name: '',
+      tags: '',
   };
 
   constructor(private service: MarketplaceService, private router: Router) { }

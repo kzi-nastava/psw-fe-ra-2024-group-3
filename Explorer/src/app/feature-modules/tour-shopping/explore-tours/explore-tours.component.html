@@ -8,6 +8,81 @@
         <img id="imgb" src="../../../../assets/screenshot4.png">
         <p class="tour-title">Explore Tours</p>
         <hr>
+
+        <!-- Sort Section -->
+        <div class="select">
+            <label style="font-weight: bold; color: var(--primary-color);margin-bottom: 5px;" for="sortSelect">Sort
+                by:</label>
+            <div id="sortSelect" class="selected" data-default="Default" data-priceAsc="Price (Low to High)"
+                data-priceDesc="Price (High to Low)" data-nameAsc="Name (A to Z)" data-nameDesc="Name (Z to A)"
+                data-lengthAsc="Duration (Short to Long)" data-lengthDesc="Duration (Long to Short)"
+                data-distanceAsc="Distance (Short to Long)" data-distanceDesc="Distance (Long to Short)"
+                data-ratingAsc="Rating (Low to High)" data-ratingDesc="Rating (High to Low)">
+                <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="arrow">
+                    <path
+                        d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z">
+                    </path>
+                </svg>
+            </div>
+            <div class="options">
+                <div title="default">
+                    <input id="default" name="option" type="radio" checked="" />
+                    <label class="option" for="default" data-txt="Default" (click)="onSortChange('default')"></label>
+                </div>
+                <div title="priceAsc">
+                    <input id="priceAsc" name="option" type="radio" />
+                    <label class="option" for="priceAsc" data-txt="Price (Low to High)"
+                        (click)="onSortChange('priceAsc')"></label>
+                </div>
+                <div title="priceDesc">
+                    <input id="priceDesc" name="option" type="radio" />
+                    <label class="option" for="priceDesc" data-txt="Price (High to Low)"
+                        (click)="onSortChange('priceDesc')"></label>
+                </div>
+                <div title="nameAsc">
+                    <input id="nameAsc" name="option" type="radio" />
+                    <label class="option" for="nameAsc" data-txt="Name (A to Z)"
+                        (click)="onSortChange('nameAsc')"></label>
+                </div>
+                <div title="nameDesc">
+                    <input id="nameDesc" name="option" type="radio" />
+                    <label class="option" for="nameDesc" data-txt="Name (Z to A)"
+                        (click)="onSortChange('nameDesc')"></label>
+                </div>
+                <div title="lengthAsc">
+                    <input id="lengthAsc" name="option" type="radio" />
+                    <label class="option" for="lengthAsc" data-txt="Duration (Short to Long)"
+                        (click)="onSortChange('lengthAsc')"></label>
+                </div>
+                <div title="lengthDesc">
+                    <input id="lengthDesc" name="option" type="radio" />
+                    <label class="option" for="lengthDesc" data-txt="Duration (Long to Short)"
+                        (click)="onSortChange('lengthDesc')"></label>
+                </div>
+                <div title="distanceAsc">
+                    <input id="distanceAsc" name="option" type="radio" />
+                    <label class="option" for="distanceAsc" data-txt="Distance (Short to Long)"
+                        (click)="onSortChange('distanceAsc')"></label>
+                </div>
+                <div title="distanceDesc">
+                    <input id="distanceDesc" name="option" type="radio" />
+                    <label class="option" for="distanceDesc" data-txt="Distance (Long to Short)"
+                        (click)="onSortChange('distanceDesc')"></label>
+                </div>
+                <div title="ratingAsc">
+                    <input id="ratingAsc" name="option" type="radio" />
+                    <label class="option" for="ratingAsc" data-txt="Rating (Low to High)"
+                        (click)="onSortChange('ratingAsc')"></label>
+                </div>
+                <div title="ratingDesc">
+                    <input id="ratingDesc" name="option" type="radio" />
+                    <label class="option" for="ratingDesc" data-txt="Rating (High to Low)"
+                        (click)="onSortChange('ratingDesc')"></label>
+                </div>
+            </div>
+        </div>
+
+
         <!-- Top 3 Blogs Section -->
         <div id="blog-details">
             <h3 class="blogs-header">Our Top 3 Blogs</h3>
@@ -15,10 +90,11 @@
                 <!-- Blog Cards for the top 3 blogs -->
                 <div class="card" *ngFor="let blog of topBlogs">
                     <div class="card-content">
-                        <img mat-card-image [src]="blog.image" alt="Blog Image" />
+                        <img mat-card-image [src]="blog.image" alt="Blog Image" class="blog-image" />
                         <h3>{{ blog.title }}</h3>
+                        <h4><strong>Description: </strong>{{blog.description}}</h4>
                     </div>
-                    <div class="card-actions">
+                    <div class="card-actions" *ngIf="this.user.role == 'tourist'">
                         <button color="accent" (click)="viewBlog(blog.id)" mat-icon-button matTooltip="Check it out">
                             <img src="assets/icons/view.png" alt="View Icon" />
                         </button>
@@ -30,34 +106,41 @@
             <button mat-raised-button class="search-button" (click)="searchTours()">
                 Search tours
             </button>
+            <button mat-raised-button class="search-button" *ngIf="tours.length!=toursCopy.length" style="margin-left: 10px; background-color: var(--primary-color) !important;" (click)="resetSearch()">
+                <mat-icon>refresh</mat-icon>
+                Reset search
+            </button>
             <button mat-raised-button class="search-button" style="margin-left: 10px;" (click)="toggleDiscountFilter()">
                 {{ showDiscountedOnly ? 'Show All Tours' : 'Show Discounted Tours Only' }}
             </button>
         </div>
-            <div id="tour-details">
-                <div class="card-container">
-                    <div class="card" (mouseleave)="onMouseLeave()" *ngFor="let t of getFilteredTours()" [ngClass]="{'highlighted-tour': t.id === refundedTourId}">
-                      <div class="card-content">
-                        <h3 style="display: flex; justify-content: space-between; align-items: center; position: relative;">
+        <div id="tour-details">
+            <div class="card-container">
+                <div class="card" (mouseleave)="onMouseLeave()" *ngFor="let t of getFilteredTours()"
+                    [ngClass]="{'highlighted-tour': t.id === refundedTourId}">
+                    <div class="card-content">
+                        <h3
+                            style="display: flex; justify-content: space-between; align-items: center; position: relative;">
                             {{ t.name }}
-                            <label *ngIf="t.isGroupTour" (mouseenter)="onMouseEnter(t.id)" (mouseleave)="onMouseLeave()" class="grouptour-popup" (click)="togglePopup(t.id)">
-                              Live group tour
+                            <label *ngIf="t.isGroupTour" (mouseenter)="onMouseEnter(t.id)" (mouseleave)="onMouseLeave()"
+                                class="grouptour-popup" (click)="togglePopup(t.id)">
+                                Live group tour
                             </label>
                             <div *ngIf="t.isGroupTour &&  TourParticipation(t.id)" class="icon-item">
-                              <ng-container>
-                                <button color="primary" (click)="participateInGroupTour(t.id ?? 0)" mat-icon-button matTooltip="You are participating in this group tour!">
-                                  <img src="assets/icons/checked.png" alt="Shopping Cart" />
-                                </button>
-                              </ng-container>
+                                <ng-container>
+                                    <button color="primary" (click)="participateInGroupTour(t.id ?? 0)" mat-icon-button
+                                        matTooltip="You are participating in this group tour!">
+                                        <img src="assets/icons/checked.png" alt="Shopping Cart" />
+                                    </button>
+                                </ng-container>
                             </div>
-                          </h3>
-                          <div
-                            class="popup"
-                            *ngIf="visiblePopupId === t.id && visiblePopupId !== null"
-                            #popup
-                          >
-                          Live group tour is a unique opportunity to join a FREE, guided demonstration tour led by the tour's author. This tour is available only once and offers an unforgettable experience with an expert guide who will walk you through every detail. Sign up now by clicking the button below and secure your spot on this special tour!
-                          </div>                          
+                        </h3>
+                        <div class="popup" *ngIf="visiblePopupId === t.id && visiblePopupId !== null" #popup>
+                            Live group tour is a unique opportunity to join a FREE, guided demonstration tour led by the
+                            tour's author. This tour is available only once and offers an unforgettable experience with
+                            an expert guide who will walk you through every detail. Sign up now by clicking the button
+                            below and secure your spot on this special tour!
+                        </div>
 
                         <p>{{ t.description }}</p>
                         <p>
@@ -82,42 +165,50 @@
                         <p><strong>Tags:</strong>
                             {{ t.tags }}
                         </p>
-                        
-                        <p><strong>Duration:</strong> 
+
+                        <p><strong>Duration:</strong>
                             <ng-container *ngIf="t.transportInfo; else noTransportInfo">
                                 {{ t.transportInfo.time }} minutes
                             </ng-container>
                             <ng-template #noTransportInfo>
-                                <div>N/A</div>
+                                <span> N/A</span>
                             </ng-template>
                         </p>
-                        
+
                         <p><strong>Distance:</strong>
                             <ng-container *ngIf="t.transportInfo; else noTransportInfoDistance">
                                 {{ t.transportInfo.distance }} km
                             </ng-container>
                             <ng-template #noTransportInfoDistance>
-                                <div>N/A</div>
+                                <span> N/A</span>
                             </ng-template>
                         </p>
-                        
-                        <div *ngIf="t.isGroupTour">
-                          <p><strong>Date and time:</strong> 
-                            <ng-container *ngIf="getDateAndTime(t) as dateAndTime; else noDate">
-                              {{ dateAndTime | date: 'dd.MM.yyyy, HH:mm' }}
+                        <p><strong>Rating:</strong>
+                            <ng-container *ngIf="t.rating; else noRating">
+                                {{ t.rating }}
                             </ng-container>
-                            <ng-template #noDate>No date available</ng-template>
+                            <ng-template #noRating>
+                                <span> N/A</span>
+                            </ng-template>
                         </p>
-                          
+
+                        <div *ngIf="t.isGroupTour">
+                            <p><strong>Date and time:</strong>
+                                <ng-container *ngIf="getDateAndTime(t) as dateAndTime; else noDate">
+                                    {{ dateAndTime | date: 'dd.MM.yyyy, HH:mm' }}
+                                </ng-container>
+                                <ng-template #noDate>No date available</ng-template>
+                            </p>
+
                         </div>
                         <div *ngIf="t.isGroupTour">
-                          <p><strong>Progress:</strong> 
-                              {{ getProgressStatus(t.id) }}
-                        </p>
-                        <p><strong>Place: first keypoint</strong> 
-                      </p>
+                            <p><strong>Progress:</strong>
+                                {{ getProgressStatus(t.id) }}
+                            </p>
+                            <p><strong>Place: first keypoint</strong>
+                            </p>
                         </div>
-                        
+
                         <div class="keypoint" *ngIf="t.keyPoints && t.keyPoints.length > 0; else noKeyPoint">
                             <img [src]="t.keyPoints[0].imagePath" alt="{{ t.keyPoints[0].name }}" class="card-image" />
                             <p><strong>First keypoint's name: </strong>
@@ -137,8 +228,8 @@
                     <div class="card-actions">
                         <!-- Ikonica za review -->
                         <div class="icon-item">
-                            <button color="primary" (click)="showReviews(t.id ?? 0)" mat-icon-button
-                                matTooltip="Show reviews">
+                            <button color="primary" *ngIf="this.user.role == 'tourist'" (click)="showReviews(t.id ?? 0)"
+                                mat-icon-button matTooltip="Show reviews">
                                 <img src="assets/icons/review.png" alt="Review Icon" />
                             </button>
                             <span class="status-text" style="color: #34AB45;"
@@ -146,76 +237,197 @@
                             <span class="status-text" style="color: black;"
                                 *ngIf="!isPurchased(t.id ?? 0) && isTourInCart(t.id ?? 0)">In Cart</span>
                         </div>
-                       
-                        <div *ngIf="t.isGroupTour && TourParticipation(t.id) && !hasAlreadyParticipated(t.id)" class="icon-item">
-                          <ng-container>
-                            <button *ngIf="!hasAlreadyParticipated(t.id)" color="primary" (click)="cancelParticipation(t.id ?? 0)" mat-icon-button matTooltip="Cancel tour (more than 24h before the tour starts)">
-                              <img src="assets/icons/cancel.png" alt="Shopping Cart" />
-                            </button>
-                          </ng-container>
-                        </div>
-                      
-                        <div *ngIf="t.isGroupTour && !disabledGroupTourParticipation && !hasAlreadyParticipated(t.id) && groupTourStatus(t.id) && groupTourProgress(t.id)" class="icon-item">
+
+                        <div *ngIf="t.isGroupTour && TourParticipation(t.id) && !hasAlreadyParticipated(t.id)"
+                            class="icon-item">
                             <ng-container>
-                              <button [disabled]="disabledGroupTourParticipation" color="primary" (click)="participateInGroupTour(t.id ?? 0)" mat-icon-button [matTooltip]="disabledGroupTourParticipation ? 'You already participated in a group tour!' : 'Participate'">
-                                <img src="assets/icons/accountable.png" alt="Shopping Cart" />
-                              </button>
+                                <button *ngIf="!hasAlreadyParticipated(t.id)" color="primary"
+                                    (click)="cancelParticipation(t.id ?? 0)" mat-icon-button
+                                    matTooltip="Cancel tour (more than 24h before the tour starts)">
+                                    <img src="assets/icons/cancel.png" alt="Shopping Cart" />
+                                </button>
                             </ng-container>
-                          </div>
-                          
-                         <!-- Ikonica za shopping cart -->
+                        </div>
+
+                        <div *ngIf="t.isGroupTour && !disabledGroupTourParticipation && !hasAlreadyParticipated(t.id) && groupTourStatus(t.id) && groupTourProgress(t.id)"
+                            class="icon-item">
+                            <ng-container>
+                                <button [disabled]="disabledGroupTourParticipation" color="primary"
+                                    (click)="participateInGroupTour(t.id ?? 0)" mat-icon-button
+                                    [matTooltip]="disabledGroupTourParticipation ? 'You already participated in a group tour!' : 'Participate'">
+                                    <img src="assets/icons/accountable.png" alt="Shopping Cart" />
+                                </button>
+                            </ng-container>
+                        </div>
+
+                        <!-- Ikonica za shopping cart -->
                         <div *ngIf="!t.isGroupTour" class="icon-item">
-                          <ng-container *ngIf="!isPurchased(t.id ?? 0) && !isTourInCart(t.id ?? 0)">
-                            <button color="primary" (click)="addToCart(t.id ?? 0, t.name, t.price)" mat-icon-button matTooltip="Add to cart">
-                              <img src="assets/icons/shopping-cart.png" alt="Shopping Cart" />
-                            </button>
-                          </ng-container>
-                        </div>
-                      </div>
-
-                     
-                    </div>
-                      
-                  </div>
-            </div>
-    </div>
-
-        <!-- Reviews Modal -->
-        <div class="modal-overlay" *ngIf="isReviewsModalOpen">
-            <div class="modal-content">
-                <h2>Reviews</h2>
-
-                <!-- Reviews displayed as cards -->
-                <p *ngIf="!selectedTourReviews || selectedTourReviews.length === 0">No reviews
-                    for this tour</p>
-                <div class="card-list">
-                    <div *ngFor="let review of selectedTourReviews" class="review-card">
-                        <div class="card-header">
-                            <h3>{{ review.username }}</h3>
-                            <span>
-                                <ng-container *ngFor="let star of [].constructor(5); let i = index">
-                                    <span [style.color]="(review.grade || 0) > i ? 'gold' : 'lightgray'">
-                                        {{ (review.grade || 0) > i ? '★' : '☆' }}
-                                    </span>
-                                </ng-container>
-                            </span>
-                        </div>
-                        <div class="card-content">
-                            <p>{{ review.comment }}</p>
-
-                            <!-- Images Section -->
-                            <div *ngFor="let image of review.reviewImages"
-                                style="display: inline-block; margin-right: 5px;">
-                                <img [src]="image" alt="Review Image" width="50" height="50"
-                                    style="border-radius: 4px;">
-                            </div>
+                            <ng-container *ngIf="!isPurchased(t.id ?? 0) && !isTourInCart(t.id ?? 0)">
+                                <button color="primary" (click)="addToCart(t.id ?? 0, t.name, t.price)" mat-icon-button
+                                    matTooltip="Add to cart">
+                                    <img src="assets/icons/shopping-cart.png" alt="Shopping Cart" />
+                                </button>
+                            </ng-container>
                         </div>
                     </div>
+
+
                 </div>
 
-                <div class="popup-actions">
-                    <button mat-button id="iks" (click)="closeReviewsModal()">X</button>
-                </div>
             </div>
         </div>
     </div>
+
+    <!-- Reviews Modal -->
+    <div class="modal-overlay" *ngIf="isReviewsModalOpen">
+        <div class="modal-content">
+            <h2>Reviews</h2>
+
+            <!-- Reviews displayed as cards -->
+            <p *ngIf="!selectedTourReviews || selectedTourReviews.length === 0">No reviews
+                for this tour</p>
+            <div class="card-list">
+                <div *ngFor="let review of selectedTourReviews" class="review-card">
+                    <div class="card-header">
+                        <h3>{{ review.username }}</h3>
+                        <span>
+                            <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                                <span [style.color]="(review.grade || 0) > i ? 'gold' : 'lightgray'">
+                                    {{ (review.grade || 0) > i ? '★' : '☆' }}
+                                </span>
+                            </ng-container>
+                        </span>
+                    </div>
+                    <div class="card-content">
+                        <p>{{ review.comment }}</p>
+
+                        <!-- Images Section -->
+                        <div *ngFor="let image of review.reviewImages"
+                            style="display: inline-block; margin-right: 5px;">
+                            <img [src]="image" alt="Review Image" width="50" height="50" style="border-radius: 4px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="popup-actions">
+                <button mat-button id="iks" (click)="closeReviewsModal()">X</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="modal-overlay" *ngIf="isSearchModalOpen">
+        <div class="modal-content" style="max-width: 70vw;">
+            <form #searchForm="ngForm" class="search-form">
+                <h2>Please enter search parameters</h2>
+                <div class="form-container">
+                    <div style="display: flex;flex-direction: row;justify-content: space-evenly;">
+
+                        <div style="display: flex;flex-direction: column;width: 40%;margin-top: 25px;">
+                            <!-- Name -->
+                            <mat-form-field appearance="outline">
+                                <mat-label>Tour Name</mat-label>
+                                <input matInput type="text" id="name" name="name" placeholder="Enter tour name"
+                                    [(ngModel)]="searchCriteria.name" />
+                            </mat-form-field>
+
+                            <!-- Min Price -->
+                            <mat-form-field appearance="outline">
+                                <mat-label>Min Price (din) <mat-icon>payments</mat-icon></mat-label>
+                                <input matInput type="number" id="minPrice" name="minPrice" min="0"
+                                    placeholder="Enter minimum price" [(ngModel)]="searchCriteria.minPrice" />
+                            </mat-form-field>
+
+                            <!-- Max Price -->
+                            <mat-form-field appearance="outline">
+                                <mat-label>Max Price (din) <mat-icon>payments</mat-icon></mat-label>
+                                <input matInput type="number" id="maxPrice" name="maxPrice" min="0"
+                                    placeholder="Enter maximum price" [(ngModel)]="searchCriteria.maxPrice" />
+                            </mat-form-field>
+
+                            <!-- Min Rating -->
+                            <mat-form-field appearance="outline">
+                                <mat-label>Min Rating  <mat-icon>star_half</mat-icon></mat-label>
+                                <input matInput type="number" id="minRating" name="minRating" min="0" max="5" step="0.1"
+                                    placeholder="Enter minimum rating" [(ngModel)]="searchCriteria.minRating" />
+                            </mat-form-field>
+
+                            <!-- Max Rating -->
+                            <mat-form-field appearance="outline">
+                                <mat-label>Max Rating  <mat-icon>star_half</mat-icon></mat-label>
+                                <input matInput type="number" id="maxRating" name="maxRating" min="0" max="5" step="0.1"
+                                    placeholder="Enter maximum rating" [(ngModel)]="searchCriteria.maxRating" />
+                            </mat-form-field>
+
+                            <!-- Min duration -->
+                            <mat-form-field appearance="outline">
+                                <mat-label>Min Duration (min) <mat-icon>timer</mat-icon></mat-label>
+                                <input matInput type="number" id="minDuration" name="minDuration" min="0" step="1"
+                                    placeholder="Enter minimum duration" [(ngModel)]="searchCriteria.minDuration" />
+                            </mat-form-field>
+
+                            <!-- Max duration -->
+                            <mat-form-field appearance="outline">
+                                <mat-label>Max Duration (min)  <mat-icon>timer</mat-icon></mat-label>
+                                <input matInput type="number" id="maxDuration" name="maxDuration" min="0" step="1"
+                                    placeholder="Enter maximum duration" [(ngModel)]="searchCriteria.maxDuration" />
+                            </mat-form-field>
+                            
+                            <!-- Min distance -->
+                            <mat-form-field appearance="outline">
+                                <mat-label>Min Distance (km)  <mat-icon>social_distance</mat-icon></mat-label>
+                                <input matInput type="number" id="minDistance" name="minDistance" min="0" step="1"
+                                    placeholder="Enter minimum distance" [(ngModel)]="searchCriteria.minDistance" />
+                            </mat-form-field>
+
+                            <!-- Max Distance -->
+                            <mat-form-field appearance="outline">
+                                <mat-label>Max Distance (km)  <mat-icon>social_distance</mat-icon></mat-label>
+                                <input matInput type="number" id="maxDistance" name="maxDistance" min="0" step="1"
+                                    placeholder="Enter maximum distance" [(ngModel)]="searchCriteria.maxDistance" />
+                            </mat-form-field>
+
+                            <!-- Tags -->
+                            <mat-form-field appearance="outline">
+                                <mat-label>Tags</mat-label>
+                                <input matInput type="text" id="tags" name="tags"
+                                    placeholder="Enter tags (comma-separated)" [(ngModel)]="searchCriteria.tags" />
+                            </mat-form-field>
+
+                            <!-- Key Point Name -->
+                            <mat-form-field appearance="outline">
+                                <mat-label>First Key Point Name</mat-label>
+                                <input matInput type="text" id="keyPointName" name="keyPointName"
+                                    placeholder="Enter key point name" [(ngModel)]="searchCriteria.keyPointName" />
+                            </mat-form-field>
+                        </div>
+                        <div style="width: 50%; display: flex;flex-direction: column;justify-content: space-between;">
+                            <label for="" style="margin-bottom: 5px;font-size: medium;">Search for tours by key point location</label>
+                            <mat-form-field appearance="outline">
+                                <mat-label>Max distance from selected location (km)</mat-label>
+                                <input matInput type="number" id="distance" min="0" name="distance"
+                                    placeholder="Enter distance" [(ngModel)]="searchCriteria.distance"
+                                    #distanceInput="ngModel" />
+                            </mat-form-field>
+
+                            <app-map [onlyOneMarker]="true" (keyPointSelected)="onKeyPointSelected($event)">
+                            </app-map>
+                        </div>
+                        
+                    </div>
+                    <div class="button-container">
+                        <button mat-raised-button class="search-button" type="submit" (click)="searchForTours()"
+                            [disabled]="searchForm.invalid">
+                            Search Tours
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="popup-actions">
+                <button mat-button id="iks" (click)="closeSearchModal()">X</button>
+            </div>
+        </div>
+    </div>
+</div>

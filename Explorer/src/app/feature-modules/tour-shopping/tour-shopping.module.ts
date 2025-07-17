@@ -13,6 +13,7 @@ import { SaleCreationComponent } from './sales-create/sales-create.component';
 import { MaterialModule } from 'src/app/infrastructure/material/material.module';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BundleToursComponent } from './bundle-tours/bundle-tours.component';
+import { SharedModule } from "../../shared/shared.module";
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { BundleToursComponent } from './bundle-tours/bundle-tours.component';
     CommonModule,
     FormsModule,
     MaterialModule,
-    MatTooltipModule
-  ]
+    MatTooltipModule,
+    SharedModule
+]
 })
 export class TourShoppingModule { }

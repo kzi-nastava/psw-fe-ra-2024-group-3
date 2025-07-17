@@ -115,4 +115,26 @@ export class LayoutService {
       })
     );
   }
+
+  deleteNotificationAuthor(notification: Notification): Observable<Notification> {
+    return this.http.put<Notification>(environment.apiHost + `author/notification/delete`, notification).pipe(
+      tap((response) => {
+      }),
+      catchError((error: HttpErrorResponse) => {
+        this.errorHandler.handleHttpError(error); // Delegiranje grešaka ErrorHandlerService-u
+        return throwError(() => error);
+      })
+    );
+  }
+
+  deleteNotificationTourist(notification: Notification): Observable<Notification> {
+    return this.http.put<Notification>(environment.apiHost + `tourist/notification/delete`, notification).pipe(
+      tap((response) => {
+      }),
+      catchError((error: HttpErrorResponse) => {
+        this.errorHandler.handleHttpError(error); // Delegiranje grešaka ErrorHandlerService-u
+        return throwError(() => error);
+      })
+    );
+  }
 }

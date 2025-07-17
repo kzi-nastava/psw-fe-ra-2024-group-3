@@ -14,6 +14,7 @@
     justify-content: center; /* Horizontalno centriranje */
     align-items: center; /* Vertikalno centriranje (opciono) */
     margin: 30px;
+    max-height: 88vh;
 }
 
 div {
@@ -33,7 +34,7 @@ h2 {
 
 .profile-form {
     max-width: 500px;
-    margin: 5px auto; 
+    margin: 5px auto;
     padding: 20px; 
     border: 1px solid #ccc;
     border-radius: 8px; 

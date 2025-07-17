@@ -21,11 +21,10 @@ export class AccountComponent implements OnInit {
   selectedWallet: Wallet | null = null;
   showWalletPopup = false;
 
-  constructor(private service: AdministrationService, private notificationService:NotificationService) { }
+  constructor(private service: AdministrationService, private notificationService: NotificationService) { }
 
   ngOnInit(): void {
     this.loadAccount();
-    this.loadWallets();
   }
 
   loadAccount(): void {
@@ -34,6 +33,8 @@ export class AccountComponent implements OnInit {
       next: (result: PagedResults<Account>) => {
         this.account = result.results;
         this.isLoading = false;
+        this.loadWallets();
+        //console.log(this.account);
         // this.notificationService.notify({ message:'Data loaded successfully!', 'Close', {
         //   duration: 3000,
         //   panelClass:"succesful"
@@ -42,7 +43,7 @@ export class AccountComponent implements OnInit {
       error: (err: any) => {
         console.log(err);
         this.isLoading = false;
-        this.notificationService.notify({ message:'Failed to load data. Please try again.', duration: 3000, notificationType: NotificationType.WARNING });
+        this.notificationService.notify({ message: 'Failed to load data. Please try again.', duration: 3000, notificationType: NotificationType.WARNING });
       }
     });
   }
@@ -56,11 +57,11 @@ export class AccountComponent implements OnInit {
       this.service.blockAccount(account).subscribe({
         next: (_) => {
           this.getAccount();
-          this.notificationService.notify({ message:'Account blocked successfully!', duration: 3000, notificationType: NotificationType.SUCCESS });
+          this.notificationService.notify({ message: 'Account blocked successfully!', duration: 3000, notificationType: NotificationType.SUCCESS });
         },
         error: (err: any) => {
           console.log(err);
-          this.notificationService.notify({ message:'Failed to block account. Please try again.', duration: 3000, notificationType: NotificationType.WARNING });
+          this.notificationService.notify({ message: 'Failed to block account. Please try again.', duration: 3000, notificationType: NotificationType.WARNING });
         }
       })
     }
@@ -74,10 +75,12 @@ export class AccountComponent implements OnInit {
     this.service.getAllWallets().subscribe({
       next: (result: PagedResults<Wallet>) => {
         this.wallets = result.results; // Store all wallets
+        this.account.forEach(a => a.balance = this.wallets.find(w => w.touristId == a.id)?.balance); // Reset the balance in the account
+        console.log(this.account);
       },
       error: (err) => {
         console.log(err);
-        this.notificationService.notify({ message:'Failed to load wallets. Please try again.', duration: 3000, notificationType: NotificationType.WARNING });
+        this.notificationService.notify({ message: 'Failed to load wallets. Please try again.', duration: 3000, notificationType: NotificationType.WARNING });
       }
     });
   }
@@ -86,7 +89,7 @@ export class AccountComponent implements OnInit {
     const wallet = this.wallets.find(w => w.touristId === userId);
 
     if (!wallet) {
-      this.notificationService.notify({ message:'Wallet not found.', duration: 3000, notificationType: NotificationType.WARNING });
+      this.notificationService.notify({ message: 'Wallet not found.', duration: 3000, notificationType: NotificationType.WARNING });
       return;
     }
 
@@ -115,13 +118,13 @@ export class AccountComponent implements OnInit {
     if (this.selectedWallet) {
       this.service.updateWallet(this.selectedWallet).subscribe({
         next: () => {
-          this.notificationService.notify({ message:'Wallet balance updated successfully!', duration: 3000, notificationType: NotificationType.SUCCESS });
+          this.notificationService.notify({ message: 'Wallet balance updated successfully!', duration: 3000, notificationType: NotificationType.SUCCESS });
           this.loadWallets(); // Refresh the wallets
           this.closePopup();
         },
         error: (err: any) => {
           console.log(err);
-          this.notificationService.notify({ message:'Failed to update wallet. Please try again.', duration: 3000, notificationType: NotificationType.WARNING });
+          this.notificationService.notify({ message: 'Failed to update wallet. Please try again.', duration: 3000, notificationType: NotificationType.WARNING });
         }
       });
     }
@@ -132,5 +135,5 @@ export class AccountComponent implements OnInit {
       this.selectedWallet.balance = 0; // Reset to 0 if empty
     }
   }
-  
+
 }

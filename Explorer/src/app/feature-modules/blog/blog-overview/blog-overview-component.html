@@ -22,6 +22,11 @@
 
     <div id="blog-details">
       <div class="card-container">
+        <div class="card add-card">
+          <button color="primary" (click)="openNewBlogForm()" mat-icon-button matTooltip="Add new blog">
+            <img src="assets/icons/add.png" alt="Add Icon"/>
+          </button>                
+        </div>
           <div class="card" *ngFor="let blog of filteredBlogs">
             <div class="card-content">
               <img mat-card-image [src]="blog.image" alt="Blog Image" />
@@ -42,11 +47,7 @@
               </button>
             </div>
           </div>
-          <div class="card add-card">
-            <button color="primary" (click)="openNewBlogForm()" mat-icon-button matTooltip="Add new blog">
-              <img src="assets/icons/add.png" alt="Add Icon"/>
-            </button>                
-          </div>
+          
       </div>
     </div>
   </div>

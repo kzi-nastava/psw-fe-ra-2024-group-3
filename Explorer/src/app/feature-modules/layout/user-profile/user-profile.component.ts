@@ -13,6 +13,8 @@ import { AdministrationService } from '../../administration/administration.servi
 import { Achievement } from '../../administration/model/achievement.model';
 import { NotificationService } from 'src/app/shared/notification.service';
 import { NotificationType } from 'src/app/shared/model/notificationType.enum';
+import { TourShoppingService } from '../../tour-shopping/tour-shopping.service';
+import { Wallet } from '../../tour-shopping/model/wallet.model';
 
 @Component({
   selector: 'xp-user-profile',
@@ -33,6 +35,8 @@ export class UserProfileComponent implements OnInit {
   filteredEncounters: any[] = [];
   showAchievements: boolean = false;
   badge: string = '';
+  wallet: Wallet | null = null;
+  error: string | null = null;
   @ViewChild('achievementsSection') achievementsSection!: ElementRef;
 
   constructor(private layoutService: LayoutService,
@@ -42,6 +46,7 @@ export class UserProfileComponent implements OnInit {
     private cd: ChangeDetectorRef,
     private encounterService: EncounterService,
     private administrationService: AdministrationService,
+    private shoppingService: TourShoppingService,
     private notificationService:NotificationService) { }
 
   ngOnInit(): void {
@@ -54,6 +59,7 @@ export class UserProfileComponent implements OnInit {
       }
     });
     if (this.role === 'tourist') {
+      this.loadWallet();
       this.administrationService.getAchievements().subscribe({
         next: (result: Achievement[]) => {
           var achievements = result.filter(a => a.type === 7 && a.imagePath != 'assets/badge.png').sort((a, b) => b.criteria - a.criteria);
@@ -115,7 +121,7 @@ export class UserProfileComponent implements OnInit {
     this.layoutService.getProfile(this.user.role).subscribe({
       next: (result: UserProfile) => {
         this.userProfile = result;
-        console.log(result)
+        console.log("User profile: ",result)
         // kod za ucitavanje slike po id
         this.isLoading = false;
         this.imageService.setControllerPath(this.role + "/image");
@@ -183,5 +189,22 @@ export class UserProfileComponent implements OnInit {
       }, 100); // Dodaj delay da se element prikaže pre skrolovanja
     }
   }
+
+  loadWallet(): void {
+      this.shoppingService.getWallet().subscribe({
+        next: (wallet: Wallet) => {
+          this.wallet = wallet;
+          this.error = null; // Clear any previous error
+          this.isLoading = false; // Stop loading
+        },
+        error: (err) => {
+          this.wallet = null;
+          this.error = 'Failed to load wallet data. Please try again later.';
+          this.isLoading = false; // Stop loading
+          console.error('Error fetching wallet:', err); // Log for debugging
+          this.notificationService.notify({message:'Error fetching wallet data', notificationType:NotificationType.WARNING,duration:3000}); // Notify user
+        }
+      });
+    }
 }
 
