@@ -8,6 +8,11 @@
         <img id="imgb" src="../../../../assets/screenshot4.png" />
         <p class="club-title">Clubs</p>
         <hr />
+        <div class="button-container">
+            <button mat-raised-button class="cl-invites-button" (click)="openInvitationModal()">
+              Club Invites
+            </button>
+          </div>
         <div id="club-details">
             <div class="card-container">
                 <div class="card add-card">
@@ -23,18 +28,47 @@
                         <p>{{ cl.description }}</p>
                     </div>
                     <div class="card-actions">
-                        <button color="accent" (click)="deleteClub(cl.id || 0)" mat-icon-button matTooltip="Delete club">
+                        <!-- Show management buttons if the logged-in user is the owner -->
+                        <ng-container *ngIf="cl.ownerId === user.id; else requestJoinTemplate">
+                          <button color="accent" (click)="deleteClub(cl.id || 0)" mat-icon-button matTooltip="Delete club">
                             <img src="assets/icons/delete.png" alt="Delete Icon" />
-                        </button>
-                        <button color="primary" (click)="onEditClicked(cl)" mat-icon-button matTooltip="Edit club">
+                          </button>
+                          <button color="primary" (click)="openClubFormModal(cl)" mat-icon-button matTooltip="Edit club">
                             <img src="assets/icons/edit.png" alt="Edit Icon" />
-                        </button>
-                        <button color="primary" (click)="openModal(cl)" mat-icon-button matTooltip="Manage club">
-                            <img src="assets/icons/equipment.png" alt="Equipment Icon" />
-                        </button>
-                    </div>
+                          </button>
+                          <button color="primary" (click)="openModal(cl)" mat-icon-button matTooltip="Manage club">
+                            <img src="assets/icons/equipment.png" alt="Manage Icon" />
+                          </button>
+                        </ng-container>
+                      
+                        <!-- Show Request Join button if the logged-in user is NOT the owner -->
+                        <ng-template #requestJoinTemplate>
+                            <!-- Show 'Joined' if the user is already a member -->
+                            <label *ngIf="cl.memberIds?.includes(user.id)" class="joined-label">
+                              Joined
+                            </label>
+                          
+                            <!-- Show 'Requested' if the user has already requested to join -->
+                            <label *ngIf="cl.requestIds?.includes(user.id)" class="requested-label">
+                              Requested Join
+                            </label>
+                          
+                            <!-- Show the 'Request Join' button if neither condition is met -->
+                            <button 
+                              *ngIf="!cl.memberIds?.includes(user.id) && !cl.requestIds?.includes(user.id)" 
+                              color="primary" 
+                              (click)="joinClub(cl.id || 0)" 
+                              class="join-club-button">
+                              Request Join
+                            </button>
+                          </ng-template>
+                      </div>
                 </div>
-                
+                <div class="card add-card">
+                    <button color="primary" (click)="openClubFormModal()" mat-icon-button matTooltip="Add new club">
+                        <img src="assets/icons/add.png" alt="Add Icon" />
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -56,36 +90,87 @@
             <div class="modal-tabs">
                 <button [class.active]="activeTab === 'invites'" (click)="setActiveTab('invites')">Invitations</button>
                 <button [class.active]="activeTab === 'members'" (click)="setActiveTab('members')">Members List</button>
+                <button [class.active]="activeTab === 'requests'" (click)="setActiveTab('requests')">Join Requests</button>
             </div>
 
             <!-- Tab Content -->
             <div *ngIf="activeTab === 'invites'">
+                <div class="search-container">
+                    <img src="assets/icons/search.png" alt="Search Icon" class="search-icon" />
+                    <input
+                      type="text"
+                      placeholder="Search by username"
+                      [(ngModel)]="searchQuery"
+                      (input)="filterList('invites')"
+                      class="search-input"
+                    />
+                  </div>
                 <div class="modal-content-container">
                     <div class="modal-column-header">Username</div>
                     <div class="modal-column-header">Email</div>
                     <div class="modal-column-header">Action</div>
 
-                    <div class="modal-row" *ngFor="let tourist of tourists">
+                    <div class="modal-row" *ngFor="let tourist of filteredTourists">
                         <span>{{ tourist.username }}</span>
                         <span>{{ tourist.id }}</span>
                         <button (click)="inviteTourist(tourist)">Invite</button>
                     </div>
-                    <div *ngIf="tourists.length === 0">No tourists to invite.</div>
+                    <div *ngIf="filteredTourists.length === 0">No tourists to invite.</div>
                 </div>
             </div>
 
             <div *ngIf="activeTab === 'members'">
+                <div class="search-container">
+                    <img src="assets/icons/search.png" alt="Search Icon" class="search-icon" />
+                    <input
+                      type="text"
+                      placeholder="Search by username"
+                      [(ngModel)]="searchQuery"
+                      (input)="filterList('invites')"
+                      (ngModelChange)="filterList(activeTab)"
+                      class="search-input"
+                    />
+                  </div>
                 <div class="modal-content-container">
                     <div class="modal-column-header">Username</div>
                     <div class="modal-column-header">Id</div>
                     <div class="modal-column-header">Action</div>
 
-                    <div class="modal-row" *ngFor="let member of members">
+                    <div class="modal-row" *ngFor="let member of filteredMembers">
                         <span>{{ member.username }}</span>
                         <span>{{ member.id }}</span>
                         <button (click)="removeMember(member)">Remove</button>
                     </div>
-                    <div *ngIf="members.length === 0">No members in the club.</div>
+                    <div *ngIf="filteredMembers.length === 0">No members in the club.</div>
+                </div>
+            </div>
+
+            <div *ngIf="activeTab === 'requests'">
+                <div class="search-container">
+                    <img src="assets/icons/search.png" alt="Search Icon" class="search-icon" />
+                    <input
+                      type="text"
+                      placeholder="Search by username"
+                      [(ngModel)]="searchQuery"
+                      (ngModelChange)="filterList(activeTab)"
+                      (input)="filterList('invites')"
+                      class="search-input"
+                    />
+                  </div>
+                <div class="modal-content-container">
+                    <div class="modal-column-header">Username</div>
+                    <div class="modal-column-header">Id</div>
+                    <div class="modal-column-header">Action</div>
+
+                    <div class="modal-row" *ngFor="let reqMember of filteredRequests">
+                        <span>{{ reqMember.username }}</span>
+                        <span>{{ reqMember.id }}</span>
+                        <span class="action-buttons">
+                            <button (click)="acceptRequest(selectedClub.id, reqMember.id!)">Accept</button>
+                            <button (click)="denyRequest(selectedClub.id, reqMember.id!)">Deny</button>
+                        </span>                    
+                    </div>
+                    <div *ngIf="filteredRequests.length === 0">No join requests in the club.</div>
                 </div>
             </div>
         </div>
@@ -98,8 +183,8 @@
             <div class="modal-header">Invitations</div>
             <div *ngIf="invitedClubs.length > 0; else noInvitations">
                 <table>
-                    <thead>
-                        <tr>
+                    <thead class="table-header">
+                        <tr background-color="green">
                             <th>Club Name</th>
                             <th>Description</th>
                             <th>Actions</th>
@@ -122,5 +207,21 @@
             </ng-template>
         </div>
     </div>
+
+    <!-- Club Form Modal -->
+    <div class="form-modal" *ngIf="isClubFormModalOpen">
+    <div class="modal-content">
+      <div class="close-modal" (click)="closeClubFormModal()">×</div>
+      <div class="modal-header">
+        {{ shouldEdit ? 'Edit Club' : 'Add New Club' }}
+      </div>
+      <xp-clubs-form 
+        [shouldEdit]="shouldEdit" 
+        [club]="selectedClub" 
+        (clubsUpdated)="getClubs()">
+      </xp-clubs-form>
+    </div>
+  </div>
+
 </div>
 

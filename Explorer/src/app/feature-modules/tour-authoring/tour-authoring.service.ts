@@ -56,6 +56,39 @@ export class TourAuthoringService {
     );
   }
 
+  joinClub(clubId: number): Observable<Clubs> {
+    return this.http.post<Clubs>(`${environment.apiHost}administration/club/${clubId}/request`, {}).pipe(
+      tap((response) => {
+      }),
+      catchError((error: HttpErrorResponse) => {
+        this.errorHandler.handleHttpError(error); // Delegiranje grešaka ErrorHandlerService-u
+        return throwError(() => error);
+      })
+    );
+  }
+
+  acceptRequest(clubId: number, userId: number): Observable<Clubs> {
+    return this.http.post<Clubs>(`${environment.apiHost}administration/club/${clubId}/acceptRequest`, userId).pipe(
+      tap((response) => {
+      }),
+      catchError((error: HttpErrorResponse) => {
+        this.errorHandler.handleHttpError(error); // Delegiranje grešaka ErrorHandlerService-u
+        return throwError(() => error);
+      })
+    );
+  }
+
+  denyRequest(clubId: number, userId: number): Observable<Clubs> {
+    return this.http.post<Clubs>(`${environment.apiHost}administration/club/${clubId}/denyRequest`, userId).pipe(
+      tap((response) => {
+      }),
+      catchError((error: HttpErrorResponse) => {
+        this.errorHandler.handleHttpError(error); // Delegiranje grešaka ErrorHandlerService-u
+        return throwError(() => error);
+      })
+    );
+  }
+
   updateClub(club: Clubs): Observable<Clubs> {
     return this.http.put<Clubs>(environment.apiHost + 'administration/club/' + club.id, club).pipe(
       tap((response) => {
