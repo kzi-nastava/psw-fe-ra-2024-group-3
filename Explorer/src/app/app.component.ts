@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { AuthService } from './infrastructure/auth/auth.service';
 import 'leaflet-routing-machine';
 import { WebSocketService } from './shared/web-socket.service';
@@ -22,6 +22,7 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
     private webSocketService: WebSocketService,
     private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngAfterViewInit() {
@@ -45,9 +46,22 @@ export class AppComponent implements OnInit {
     this.authService.checkIfUserExists();
   }
 
+  previewNotification(text: any) {
+    var trimParts = text.split(',,');
+    var notification = { Content: trimParts[0], ImagePath: trimParts[1] };
+    this.notifications.push(notification);
+    this.showNotification = true;
+    this.cdr.detectChanges();
+  }
+
   onMessageReceived(notification: any) {
     this.notifications.push(notification);
     this.showNotification = true;
-    this.notificationService.notify({message: notification.Content, duration: 5000,notificationType:NotificationType.MESSAGE,messageSender:'Explorer'});
+    this.cdr.detectChanges();
+    this.notificationService.notify({ message: notification.Content, duration: 5000, notificationType: NotificationType.MESSAGE, messageSender: 'Explorer' });
+  }
+
+  showedAllNotifications(text: any) {
+    this.showNotification = false;
   }
 }

@@ -12,14 +12,15 @@ div {
     left: 20px;
     width: 50px;
     height: 50px;
+    z-index: 1010;
 }
 
 .profile-dropdown {
     position: absolute;
     top: 60px;
-    margin-right:15px;
+    margin-right: 15px;
     right: 0;
-    border: 1px solid  #333;
+    border: 1px solid #333;
     border-radius: 4px;
     width: 150px;
     box-shadow: 0 4px 12px rgba(51, 51, 51, 0.65);
@@ -44,52 +45,59 @@ div {
 }
 
 
-.cartbutton{
+.cartbutton {
     background-color: rgba(3, 26, 16, 0.05);
     border-radius: 20%;
-    border:0px;
+    border: 0px;
 }
 
-.log{
-    width:20px;
-    height:20px;
-    filter:invert(1);
-    margin-left:35%;
+.log {
+    width: 20px;
+    height: 20px;
+    filter: invert(1);
+    margin-left: 35%;
 }
-.cartbutton:active{
-    background-color:  rgba(61, 66, 64, 0.8);;
+
+.cartbutton:active {
+    background-color: rgba(61, 66, 64, 0.8);
+    ;
 }
 
 .profileButton {
-    display: inline-flex; 
-    justify-content: center; 
+    display: inline-flex;
+    justify-content: center;
     align-items: center;
     border-radius: 50%;
     border: 2px solid green;
-    padding: 0; 
+    padding: 0;
     width: 50px;
     height: 50px;
-    background-color: transparent; 
+    background-color: transparent;
 }
-.nameT{
+
+.nameT {
     font-family: 'Lucida Handwriting', cursive;
     margin-left: -0.5%;
     font-size: medium;
 }
-.loogo{
-    width:60px;
-    height:100%;
+
+.loogo {
+    width: 60px;
+    height: 100%;
     background-color: rgba(0, 0, 0, 0.0);
     cursor: pointer;
 }
+
 .profileButton img {
     width: 100%;
-    height: 100%; 
-    border-radius: 50%; 
+    height: 100%;
+    border-radius: 50%;
 }
+
 .profileButton:active img {
-    filter:opacity(80%);
+    filter: opacity(80%);
 }
+
 .location-button img {
     width: 30px;
     height: 30px;
@@ -146,13 +154,54 @@ p {
 @keyframes dropdownSlide {
     0% {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(150px);
+        transform: translateX(100px);
     }
 
     100% {
         opacity: 1;
         transform: translateY(0);
+        transform: translateX(0);
     }
+}
+
+.primary-button.selected-tab {
+    background-color: var(--primary-color) !important;
+    animation: ease-in 0.5s;
+}
+
+.primary-button::before,
+.primary-button::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.primary-button::before {
+    content: "";
+
+    width: 120%;
+    left: -10%;
+    transform: skew(30deg);
+    transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+}
+
+.primary-button:hover::before {
+    content: "";
+    width: 120%;
+    left: -120%;
+    transform: skew(30deg);
+    transition: transform 0.6s cubic-bezier(0.3, 1, 0.8, 1);
+    background: var(--primary-color);
+    transform: translate3d(100%, 0, 0);
+}
+
+
+.shake {
+    animation: shakeWithPause 2.0s ease-in-out infinite;
 }
 
 .transparent-button {
@@ -160,7 +209,6 @@ p {
     border: none;
     padding: 0;
     cursor: pointer;
-    animation: shakeWithPause 2.0s ease-in-out infinite;
     position: relative;
 }
 
@@ -179,73 +227,110 @@ p {
 }
 
 .notification-dropdown {
-    position: absolute;
-    top: 60px;
-    right: 10px;
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 300px;
-    max-height: 200px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    padding: 10px;
-    z-index: 1000;
-
-    /* Animation */
-    opacity: 0;
-    animation: dropdownSlide 0.3s ease forwards;
+    position: fixed;
+    display: flex;
+    align-items: flex-start !important;
+    justify-content: center;
+    top: 8vh;
+    right: 0;
+    height: auto;
+    width: auto;
+    max-height: 90vh;
+    max-width: 480px;
+    /* Širina može biti prilagođena */
+    overflow-y: auto;
+    overflow-x: auto;
+    background-color: var(--primary-color);
+    /* Tamnija crna-zelena nijansa */
+    border-radius: 2px;
+    box-shadow: 0px 4px 8px var(--primary-color);
+    z-index: 1100;
+    padding-left: 5px;
+    padding-right: 0px;
+    padding-bottom: 5px;
+    animation: dropdownSlide 0.3s ease-out;
 }
 
-.notification-dropdown::-webkit-scrollbar {
-    display: none;
-}
-
-.notification-dropdown {
-    scrollbar-width: none;
-}
-
-.notification-dropdown ul {
+.notification-dropdown #notifications {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
     list-style-type: none;
-    margin: 0;
-    padding: 0;
+    width: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
-.notification-dropdown li {
-    padding: 8px 10px;
-    font-size: 14px;
-    color: #333;
-    border-bottom: 1px solid #f1f1f1;
+.notification-dropdown #notification {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid var(--secondary-color);
+    /* Svetlija zelena boja za separator */
+    border-radius: 5px;
+    margin-bottom: 5px;
+    transition: background-color 0.3s ease;
 }
 
-.notification-dropdown li:last-child {
-    border-bottom: none;
+.notification-dropdown .unread-notification {
+    background-color: #0064003f;
+    /* Tamno zelena za nepročitana obaveštenja */
+    color: #ffffff;
+}
+
+.notification-dropdown .even-notification {
+    background-color: #000000;
+    /* Tamnija nijansa za svako drugo obaveštenje */
+}
+
+.notification-dropdown #notification:hover {
+    background-color: #014f12;
+    /* Svetlija zelena na hover */
 }
 
 .notification-button {
-    display: block;
-    width: 100%;
-    padding: 10px 15px;
-    font-size: 14px;
-    color: #333;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    background: none;
+    border: none;
+    color: inherit;
     text-align: left;
+    font-size: 14px;
     cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
+    width: 100%;
+    outline: none;
+}
+
+.transparent-button {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 15px;
+    height: 15px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid rgb(0, 0, 0);
 }
 
 .notification-button:hover {
-    background-color: #f0f0f0;
+    text-decoration: underline;
 }
 
-.notification-button:active {
-    background-color: #e0e0e0;
+.read-icon {
+    font-size: 12px;
+    color: var(--secondary-color);
+    /* Svetlija zelena za ikonicu */
+    margin-left: 10px;
+    cursor: pointer;
 }
 
-.notification-button:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.6);
+.notification-dropdown::-webkit-scrollbar-thumb {
+    border-right: #19191E 3px solid;
 }

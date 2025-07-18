@@ -1,3 +1,4 @@
+<!-- NAPOMENA:: NE KORISTI SE OVA KOMPONENTA KOD TURISTE -->
 <div *ngIf="!isLoading">
     <div class="tour-container">
         <!-- Tour Cards -->
@@ -21,7 +22,7 @@
             <!-- Blog Cards for the top 3 blogs -->
             <div class="card" *ngFor="let blog of topBlogs">
                 <div class="card-content">
-                    <img mat-card-image [src]="blog.image" alt="Blog Image" />
+                    <img  [src]="blog.image" alt="Blog Image" class="blog-image"/>
                     <h3>{{ blog.title }}</h3>
                 </div>
                 <div class="card-actions">

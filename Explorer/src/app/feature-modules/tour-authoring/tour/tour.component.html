@@ -16,6 +16,11 @@
          <hr>
          <div *ngIf="isToursClicked" id="tour-details">
             <div class="card-container">
+              <div class="card add-card">
+                <button color="primary" (click)="onAddClicked()" mat-icon-button matTooltip="Add new tour">
+                  <img src="assets/icons/add.png" alt="Add Icon"/>
+              </button>                
+              </div>
                 <div class="card" *ngFor="let t of tours">
                   <div class="card-content">
                     <h3>{{t.name}}</h3>
@@ -46,15 +51,16 @@
                       </button>
                   </div>
                 </div>
-                <div class="card add-card">
-                  <button color="primary" (click)="onAddClicked()" mat-icon-button matTooltip="Add new tour">
-                    <img src="assets/icons/add.png" alt="Add Icon"/>
-                </button>                
-                </div>
+                
               </div>
         </div>
         <div *ngIf="isGroupToursClicked" id="tour-details">
           <div class="card-container">
+            <div class="card add-card">
+              <button color="primary" (click)="onAddGroupTour()" mat-icon-button matTooltip="Add new tour">
+                <img src="assets/icons/add.png" alt="Add Icon" />
+              </button>
+            </div>
             <div class="card" *ngFor="let t of groupTours">
               <div class="progress-badge" [ngClass]="getProgressClass(t.progress)">
                 {{ getProgressLabel(t.progress) }}
@@ -101,11 +107,7 @@
                 </button>
               </div>
             </div>
-            <div class="card add-card">
-              <button color="primary" (click)="onAddGroupTour()" mat-icon-button matTooltip="Add new tour">
-                <img src="assets/icons/add.png" alt="Add Icon" />
-              </button>
-            </div>
+            
           </div>
         </div>
         

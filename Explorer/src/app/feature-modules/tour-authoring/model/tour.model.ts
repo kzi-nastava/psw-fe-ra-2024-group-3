@@ -19,6 +19,7 @@ export interface Tour {
     averageScore: number;
     reviewStatus?:number;
     isGroupTour:boolean; 
+    rating?:number;
   }
 
   export enum DifficultyStatus {

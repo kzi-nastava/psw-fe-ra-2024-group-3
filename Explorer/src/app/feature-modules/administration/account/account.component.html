@@ -12,10 +12,14 @@
             <div class="card-container">
                 <div class="card" *ngFor="let acc of account">
                     <div class="card-content">
-                        <h3>{{acc.username}}</h3>
+                        <h3 style="color: var(--secondary-color);">{{acc.username}}</h3>
+                        <h4>{{acc.firstName}} {{acc.lastName}}</h4>
                         <p>{{acc.role}}</p>
                         <p><strong>Email:</strong> 
                             {{acc.email}}
+                        </p>
+                        <p *ngIf="acc.role=='Tourist'"><strong>Balance:</strong> 
+                            {{acc.balance}}
                         </p>
                     </div>
                     <div class="card-actions">

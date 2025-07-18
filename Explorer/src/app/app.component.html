@@ -1,4 +1,4 @@
-<xp-navbar></xp-navbar>
+<xp-navbar (previewAchiNotification)="previewNotification($event)"></xp-navbar>
 <app-notification-component></app-notification-component>
-<app-notification *ngIf="showNotification" [notifications]="notifications"></app-notification>
+<app-notification *ngIf="showNotification" [notifications]="notifications" (showedAll)="showedAllNotifications($event)"></app-notification>
 <router-outlet></router-outlet>

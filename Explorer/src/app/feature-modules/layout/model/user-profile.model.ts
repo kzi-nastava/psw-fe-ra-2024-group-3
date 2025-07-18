@@ -5,4 +5,6 @@ export interface UserProfile {
     imageURL: string;
     biography: string;
     motto: string;
+    xp?: number;
+    email?: string;
 }

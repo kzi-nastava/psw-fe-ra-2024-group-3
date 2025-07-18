@@ -2,6 +2,7 @@ export enum NotificationType {
     TourProblem = 0,
     PublicRequest = 1,
     TourRefund = 2,
+    Achievement = 3,
     GroupCancelation = 4
 }
 
@@ -12,4 +13,5 @@ export interface Notification {
     referenceId: number;
     recieverId: number;
     isRead: boolean;
+    imagePath: string;
 }

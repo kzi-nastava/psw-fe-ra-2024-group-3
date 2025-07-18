@@ -83,7 +83,7 @@
 }
 
 .card-content p {
-  margin: 8px 0;
+  margin: 0px 0;
   color: #666;
   font-size: 16px; /* Povećana veličina teksta */
   line-height: 1.5; /* Bolje čitljiv razmak između redova */
@@ -144,6 +144,16 @@
   max-height: 700px; /* Ograniči visinu na 90% visine ekrana */
   display: flex;
   flex-direction: column;
+}
+
+.red{
+  color: red;
+  font-weight: bold;
+}
+
+.green{
+  color: green;
+  font-weight: bold;
 }
 
 .modal-content h2 {
@@ -234,14 +244,32 @@
   display: flex;
   flex-direction: column;
 }*/
+.modal-content1 {
+  position: relative;
+  background-color: white;
+  padding-top: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  color: #666;
+  /* width: 80%; */
+  max-width: 600px;
+  max-height: 95%;
+  display: flex;
+  flex-direction: column;
+}
 
-.modal-content h2 {
+.modal-content1 h2 {
   color: black;
 }
 
-.modal-content p {
+.modal-content1 p {
   margin: 8px 0;
   color: #666;
+}
+
+.x:hover {
+  color: red;
 }
 
 .popup-actions {

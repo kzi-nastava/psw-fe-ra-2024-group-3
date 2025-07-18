@@ -4,6 +4,11 @@
       <hr>
       <div id="encounter-details">
           <div class="card-container">
+            <div class="card add-card">
+              <button color="primary" (click)="navigateToAddEncounter()" mat-icon-button matTooltip="Add new encounter">
+                <img src="assets/icons/add.png" alt="Add Icon"/>
+            </button>                
+            </div>
               <div class="card" *ngFor="let encounter of encounters">
                 <div class="map-container" *ngIf="encounter.coordinates" id="map{{ encounter.id }}"></div>
                 <div class="card-content">
@@ -26,11 +31,7 @@
                   </button>
                 </div>
               </div>
-              <div class="card add-card">
-                <button color="primary" (click)="navigateToAddEncounter()" mat-icon-button matTooltip="Add new encounter">
-                  <img src="assets/icons/add.png" alt="Add Icon"/>
-              </button>                
-              </div>
+              
             </div>
       </div>
   </div>

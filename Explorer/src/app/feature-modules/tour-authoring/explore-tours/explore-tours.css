@@ -17,6 +17,13 @@
     justify-content: space-between;
 }
 
+.blog-image {
+    max-height: 30vh;
+    width: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
 .tour-header h2 {
     font-size: 1.2rem;
     margin: 0 0 10px;

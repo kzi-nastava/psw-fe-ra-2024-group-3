@@ -41,6 +41,7 @@ export class EquipmentComponent implements OnInit {
 
   getEquipment(): void {
     this.isLoading = true;
+    this.shouldRenderEquipmentForm = false;
     this.service.getEquipment().subscribe({
       next: (result: PagedResults<Equipment>) => {
         this.isLoading = false;

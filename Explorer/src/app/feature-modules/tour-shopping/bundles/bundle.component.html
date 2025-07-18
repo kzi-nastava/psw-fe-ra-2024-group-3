@@ -5,6 +5,11 @@
         <hr>
         <div id="bundle-details">
             <div class="card-container">
+                <div class="card add-card">
+                    <button color="primary" (click)="createNewBundle()" mat-icon-button matTooltip="Create new bundle">
+                        <img src="assets/icons/add.png" alt="Add Icon" />
+                    </button>
+                </div>
                 <div class="card" *ngFor="let b of bundles">
                     <div class="card-content">
                         <h3>{{b.title}}</h3>
@@ -25,11 +30,6 @@
                             <img src="assets/icons/tour.png" alt="Tours Icon" />
                         </button>
                     </div>
-                </div>
-                <div class="card add-card">
-                    <button color="primary" (click)="createNewBundle()" mat-icon-button matTooltip="Create new bundle">
-                        <img src="assets/icons/add.png" alt="Add Icon" />
-                    </button>
                 </div>
             </div>
         </div>

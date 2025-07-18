@@ -13,24 +13,38 @@
         <div class="card" *ngIf="userProfile">
           <div style="position: relative;">
             <img [src]="userProfile.imageURL" alt="Profile Image" class="profile-image">
-            <img *ngIf="badge" style="width: 80px;height: 80px;z-index: 1000;position: absolute;bottom: 15px;right: 15px;" [src]="badge" >
+            <img *ngIf="badge"
+              style="width: 80px;height: 80px;z-index: 999;position: absolute;bottom: 15px;right: 15px;" [src]="badge">
           </div>
           <div class="card-content">
             <h3>{{ userProfile.firstName }} {{ userProfile.lastName }}</h3>
             <p>{{ userProfile.biography }}</p>
-            <p><strong>Motto:</strong> 
+            <p><strong>Motto:</strong>
               {{ userProfile.motto }}
+            </p>
+            <p><strong>Email: </strong>
+              {{ userProfile.email }}
+            </p>
+            <p><strong>Role: </strong>
+              {{ user.role }}
+            </p>
+            <p *ngIf="user.role=='tourist'"><strong>Balance: </strong>
+              <span *ngIf="wallet" [ngClass]="{'red': wallet.balance<1, 'green':wallet.balance>0}" >{{ wallet.balance }} </span> DIN
+            </p>
+            <p *ngIf="user.role=='tourist'"><strong>XP: </strong>
+              <span class="red" >{{ userProfile.xp }} </span>
             </p>
           </div>
           <div class="card-actions">
-            <button color="primary" *ngIf="user.role === 'tourist'" (click)="seeWallet()" mat-icon-button matTooltip="Show wallet">
-              <img src="assets/icons/wallet.png" alt="Wallet Icon"/>
-            </button>
+            <!-- <button color="primary" *ngIf="user.role === 'tourist'" (click)="seeWallet()" mat-icon-button
+              matTooltip="Show wallet">
+              <img src="assets/icons/wallet.png" alt="Wallet Icon" />
+            </button> -->
             <button color="primary" (click)="toggleEdit()" mat-icon-button matTooltip="Edit profile">
-              <img src="assets/icons/edit.png" alt="Edit Icon"/>
+              <img src="assets/icons/edit.png" alt="Edit Icon" />
             </button>
           </div>
-        </div>    
+        </div>
         <div class="profile-buttons">
           <button *ngIf="user.role === 'tourist'" mat-raised-button (click)="setPreferences()">Set preferences</button>
           <button *ngIf="user.role === 'tourist'" mat-raised-button (click)="myReviews()">My reviews</button>
@@ -39,57 +53,65 @@
           <button *ngIf="user.role === 'author'" mat-raised-button (click)="myBundles()">My bundles</button>
           <button *ngIf="isAdmin" mat-raised-button (click)="showEncounters()">Show encounters</button>
         </div>
-      </div>      
-     </div>
+      </div>
+    </div>
   </div>
 
-  <div *ngIf="isEditing">
-    <xp-user-profile-form [profile]="userProfile" (profileUpdated)="onProfileUpdated()"></xp-user-profile-form>
+  <div *ngIf="isEditing"  class="modal-overlay" >
+    <div class="modal-content1">
+      <div class="popup-actions">
+        <button matTooltip="close window" class="x" mat-button (click)="isEditing = false">X</button>
+      </div>
+      <xp-user-profile-form [profile]="userProfile"
+        (profileUpdated)="onProfileUpdated()"></xp-user-profile-form>
+    </div>
   </div>
-  
+
   <div *ngIf="!userProfile" class="loading-message">
     <p>Loading user profile...</p>
   </div>
 
   <div class="modal-overlay" *ngIf="showEncountersModal">
     <div class="modal-content">
-        <h2>Encounters</h2>
-        <div class="popup-actions">
-          <button mat-button (click)="showEncountersModal = false">X</button>
-        </div>
-        <!-- <p *ngIf="!selectedTourReviews || selectedTourReviews.length === 0">
+      <h2>Encounters</h2>
+      <div class="popup-actions">
+        <button mat-button (click)="showEncountersModal = false">X</button>
+      </div>
+      <!-- <p *ngIf="!selectedTourReviews || selectedTourReviews.length === 0">
           No reviews for this tour</p> -->
 
-          <!-- <mat-label>Filter by Status</mat-label>
+      <!-- <mat-label>Filter by Status</mat-label>
           <mat-select [(value)]="selectedStatus" (selectionChange)="filterEncounters()">
             <mat-option value="all">All</mat-option>
             <mat-option value="draft">Draft</mat-option>
           </mat-select>
         </mat-form-field> -->
-        <div class="card-list">
-          <ng-container *ngFor="let encounter of filteredEncounters">
-            <div class="encounter-card" [ngClass]="{ 'required-encounter': encounter.status==0, 'completed-encounter': encounter.isCompletedByMe }">
-              <div class="encounter-card-content">
-                <h3>{{ encounter.name }}</h3>
-                  <p>{{ encounter.description }}</p>
-                  <p><strong>Type:</strong> 
-                    {{ encounter.type === 0 ? 'Social' : encounter.type === 1 ? 'Location' : 'Misc' }}
-                  </p>
-                  <p><strong>Status:</strong> 
-                    {{ encounter.status === 0 ? 'Draft' : encounter.status === 1 ? 'Active' : 'Archived' }}
-                  </p>
-                  <p><strong>XP:</strong> {{ encounter.xp }}</p>
-                  <p *ngIf="encounter.type === 0"><strong>Range:</strong> {{ encounter.range }}m</p>
-                  <p *ngIf="encounter.type === 0"><strong>Tourists Required:</strong> {{ encounter.touristNumber }}</p>
-              </div>
-              <div class="card-actions">
-                  <button *ngIf="encounter.status == '0'" color="accent" (click)="activateEncounter(encounter)" mat-icon-button matTooltip="Activate encounter">
-                    <img src="assets/icons/publish.png" alt="Publish Icon"/>
-                  </button>
-              </div>
+      <div class="card-list">
+        <ng-container *ngFor="let encounter of filteredEncounters">
+          <div class="encounter-card"
+            [ngClass]="{ 'required-encounter': encounter.status==0, 'completed-encounter': encounter.isCompletedByMe }">
+            <div class="encounter-card-content">
+              <h3>{{ encounter.name }}</h3>
+              <p>{{ encounter.description }}</p>
+              <p><strong>Type:</strong>
+                {{ encounter.type === 0 ? 'Social' : encounter.type === 1 ? 'Location' : 'Misc' }}
+              </p>
+              <p><strong>Status:</strong>
+                {{ encounter.status === 0 ? 'Draft' : encounter.status === 1 ? 'Active' : 'Archived' }}
+              </p>
+              <p><strong>XP:</strong> {{ encounter.xp }}</p>
+              <p *ngIf="encounter.type === 0"><strong>Range:</strong> {{ encounter.range }}m</p>
+              <p *ngIf="encounter.type === 0"><strong>Tourists Required:</strong> {{ encounter.touristNumber }}</p>
             </div>
-          </ng-container>
-        </div>
+            <div class="card-actions">
+              <button *ngIf="encounter.status == '0'" color="accent" (click)="activateEncounter(encounter)"
+                mat-icon-button matTooltip="Activate encounter">
+                <img src="assets/icons/publish.png" alt="Publish Icon" />
+              </button>
+            </div>
+          </div>
+        </ng-container>
+      </div>
     </div>
   </div>
 
@@ -143,7 +165,7 @@
         </div>
     </div>
   </div> -->
-  </div>
+</div>
 
 <div #achievementsSection *ngIf="showAchievements">
   <xp-achievements></xp-achievements>
