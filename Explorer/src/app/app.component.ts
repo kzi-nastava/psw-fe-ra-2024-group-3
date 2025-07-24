@@ -6,14 +6,21 @@ import { NotificationComponent } from './shared/notification/notification.compon
 import { NotificationService } from './shared/notification.service';
 import { NotificationType } from './shared/model/notificationType.enum';
 import { Notification } from './feature-modules/layout/model/notification.model';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+
+
+declare let gtag: Function;
+
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css', '../styles.css']
+  styleUrls: ['./app.component.css', '../styles.css'],
 })
 export class AppComponent implements OnInit {
-  @ViewChild(NotificationComponent) notificationComponent!: NotificationComponent;
+  @ViewChild(NotificationComponent)
+  notificationComponent!: NotificationComponent;
   title = 'Explorer';
   notifications: any[] = [];
   showNotification = false;
@@ -22,8 +29,19 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
     private webSocketService: WebSocketService,
     private notificationService: NotificationService,
-    private cdr: ChangeDetectorRef
-  ) { }
+    private cdr: ChangeDetectorRef,
+    private router: Router
+  ) {
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          gtag('config', 'G-TE49FF5RFZ', {
+            page_path: event.urlAfterRedirects,
+          });
+        }
+      });
+  }
 
   ngAfterViewInit() {
     this.notificationService.register(this.notificationComponent);
@@ -58,7 +76,12 @@ export class AppComponent implements OnInit {
     this.notifications.push(notification);
     this.showNotification = true;
     this.cdr.detectChanges();
-    this.notificationService.notify({ message: notification.Content, duration: 5000, notificationType: NotificationType.MESSAGE, messageSender: 'Explorer' });
+    this.notificationService.notify({
+      message: notification.Content,
+      duration: 5000,
+      notificationType: NotificationType.MESSAGE,
+      messageSender: 'Explorer',
+    });
   }
 
   showedAllNotifications(text: any) {
