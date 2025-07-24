@@ -1,50 +1,46 @@
-<div>
+<div class="container">
   <xp-sales-creation></xp-sales-creation>
 
-  <div class="row mt-4">
-    <div class="col-md-4" *ngFor="let sale of sales">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">{{ sale.discount }} % off</h5>
-          
-          <!-- Editable End Time (datetime-local input field) -->
-          <p class="card-text">
-            End Time: 
-            <input 
-              type="datetime-local" 
-              [(ngModel)]="sale.endTime" 
-              [min]="minDate()" 
-              class="form-control" 
-              (change)="onInputChange(sale)" />
-          </p>
-  
-          <!-- Editable Discount (input field) -->
-          <p class="card-text">
-            Discount: 
-            <input 
-              type="number" 
-              [(ngModel)]="sale.discount" 
-              min="0" 
-              max="100" 
-              class="form-control" 
-              (change)="onInputChange(sale)" />
-          </p>
-          
-          <p class="card-text">Tour IDs: {{ sale.tourIds.join(', ') }}</p>
+  <div class="card-container">
+    <div class="sale-card" *ngFor="let sale of sales">
+      <div class="card-body">
+        <h5 class="card-title">{{ sale.discount }}% Off</h5>
+
+        <div class="form-group">
+          <label>End Time:</label>
+         <input 
+  type="datetime-local"
+  [value]="formatForInput(sale.endTime)"
+  (change)="onDateChange($event, sale)"
+  [min]="minDate()"
+  class="form-control" />
+
+
         </div>
-  
-        <div class="card-footer">
-          <button class="btn btn-danger" (click)="deleteSale(sale.id)">Delete</button>
-          
-          <!-- Update Button: Disabled until changes are made -->
-          <button 
-            class="btn btn-success" 
-            [disabled]="!isSaleUpdated(sale)" 
-            (click)="updateSale(sale)">
-            Update
-          </button>
+
+        <div class="form-group">
+          <label>Discount:</label>
+          <input 
+            type="number" 
+            [(ngModel)]="sale.discount" 
+            min="0" 
+            max="100" 
+            class="form-control"
+            (change)="onInputChange(sale)" />
         </div>
+
+        <p class="card-text">Tour IDs: {{ sale.tourIds.join(', ') }}</p>
+      </div>
+
+      <div class="card-footer">
+        <button class="btn btn-danger" (click)="deleteSale(sale.id)">Delete</button>
+        <button 
+          class="btn btn-success" 
+          [disabled]="!isSaleUpdated(sale)" 
+          (click)="updateSale(sale)">
+          Update
+        </button>
       </div>
     </div>
-  </div>  
+  </div>
 </div>

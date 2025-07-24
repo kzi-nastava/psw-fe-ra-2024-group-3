@@ -1,113 +1,145 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Sale } from '../model/sale.model';
 import { SaleService } from '../sales.service';
 import { TourExecutionService } from '../../tour-execution/tour-execution.service';
 import { Tour } from '../../tour-authoring/model/tour.model';
-import { PagedResults } from 'src/app/shared/model/paged-results.model';
-import { NotificationService } from 'src/app/shared/notification.service';
-import { NotificationType } from 'src/app/shared/model/notificationType.enum';
 
 @Component({
   selector: 'xp-sales-creation',
   templateUrl: './sales-create.component.html',
-  styleUrls: ['./sales-create.component.css']
+  styleUrls: ['./sales-create.component.css'],
 })
-export class SaleCreationComponent {
-    constructor(
-        private salesService: SaleService,
-        private tourService: TourExecutionService,
-        private notificationService: NotificationService
-    ) {}
-
-  // Sale data based on the Sale interface
+export class SaleCreationComponent implements OnInit {
   sale: Sale = {
     discount: 0,
-    startTime: new Date(), 
+    startTime: new Date(),
     endTime: new Date(),
-    tourIds: []
+    tourIds: [],
   };
 
-  tours: Tour[] = [
-  ];
-
-  selectedTourIds = new Set<number>();
-
-  // Validation messages
+  tours: Tour[] = [];
+  selectedTourIds: Set<number> = new Set();
   errorMessage: string = '';
+  currentDateTime: string = '';
+  maxEndDateTime: string = '';
 
-  ngOnInit(){
-    this.getPublishedTours()
+  constructor(
+    private salesService: SaleService,
+    private tourService: TourExecutionService
+  ) {}
+
+  ngOnInit(): void {
+    this.setMinDateTime();
+    this.getPublishedTours();
   }
 
+  // Set the min date-time value to prevent past selection
+  setMinDateTime(): void {
+    const now = new Date();
+    this.currentDateTime = now.toISOString().slice(0, 16); // For datetime-local input
+  }
+
+  // Load published tours
   getPublishedTours(): void {
     this.tourService.getAllPublishedTours().subscribe({
       next: (result: Tour[]) => {
-        this.tours = result;  
-        console.log(this.tours);
+        this.tours = result;
+        console.log('Tours loaded:', this.tours);
       },
       error: () => {
-        console.log("ERROR LOADING tours");
-        this.notificationService.notify({message: 'Error loading tours', notificationType:NotificationType.WARNING,duration:3000});
-      }
+        console.error('Error loading tours');
+      },
     });
   }
 
-  // Submit sale data
-  submitSale() {
-    if (this.isValid()) {
-      this.sale.tourIds = Array.from(this.selectedTourIds);
-      this.sale.endTime = new Date(this.sale.endTime).toISOString()
-      this.sale.startTime = new Date(this.sale.startTime).toISOString()
-    //   console.log(this.sale)
-      this.salesService.createSale(this.sale).subscribe({
-        next: () => {
-          console.log("Uspesno");
-          this.notificationService.notify({message: 'Sale created successfully', notificationType:NotificationType.SUCCESS,duration:3000});
-        },
-        error: () => {
-          console.log("ERROR LOADING tours");
-          this.notificationService.notify({message: 'Error creating sale', notificationType:NotificationType.WARNING,duration:3000});
-        }
-      });
-    } else {
-      console.log('Invalid sale data.');
-      this.notificationService.notify({message: 'Invalid sale data', notificationType:NotificationType.WARNING,duration:3000});
-    }
-  }
-
+  // Handle checkbox toggle
   toggleSelection(tourId: number | undefined): void {
-    if (tourId) {  // Ensure tourId is not undefined or null
-      if (this.selectedTourIds.has(tourId)) {
-        this.selectedTourIds.delete(tourId);  // Deselect tour
-      } else {
-        this.selectedTourIds.add(tourId);  // Select tour
-      }
-    }
+    if (!tourId) return;
+    this.selectedTourIds.has(tourId)
+      ? this.selectedTourIds.delete(tourId)
+      : this.selectedTourIds.add(tourId);
   }
 
-  // Check validation for start and end times
+  // Auto-correct endTime if it's earlier than startTime
+  onStartTimeChange(): void {
+  const start = new Date(this.sale.startTime);
+  const end = new Date(this.sale.endTime);
+
+  // Correct the end time if it's before start time
+  if (end < start) {
+    this.sale.endTime = new Date(start);
+  }
+
+  // Update max allowed endTime (2 weeks after start)
+  const maxEnd = new Date(start);
+  maxEnd.setDate(maxEnd.getDate() + 14);
+  this.maxEndDateTime = maxEnd.toISOString().slice(0, 16);
+}
+
+  // Validate and submit sale
+  submitSale(): void {
+    if (!this.isValid()) {
+      console.warn('Invalid sale data:', this.errorMessage);
+      return;
+    }
+
+    this.sale.tourIds = Array.from(this.selectedTourIds);
+    this.sale.startTime = new Date(this.sale.startTime).toISOString();
+    this.sale.endTime = new Date(this.sale.endTime).toISOString();
+
+    this.salesService.createSale(this.sale).subscribe({
+      next: () => {
+        console.log('Sale created successfully');
+        this.resetForm();
+      },
+      error: () => {
+        console.error('Failed to create sale');
+      },
+    });
+  }
+
+  // Validations
   isValid(): boolean {
-    const currentTime = new Date();
-    
-    if (new Date(this.sale.startTime) <= currentTime) {
-      this.errorMessage = 'Start time must be greater than the current time.';
+    const now = new Date();
+    const start = new Date(this.sale.startTime);
+    const end = new Date(this.sale.endTime);
+    const maxEnd = new Date(start);
+    maxEnd.setDate(start.getDate() + 14);
+
+    if (start <= now) {
+      this.errorMessage = 'Start time must be in the future.';
       return false;
     }
 
-    const startTime = new Date(this.sale.startTime);
-    const endTime = new Date(this.sale.endTime);
-    const maxEndTime = new Date(startTime);
-    maxEndTime.setDate(startTime.getDate() + 14);
-
-    if (endTime <= startTime) {
-      this.errorMessage = 'End time must be greater than the start time.';
-      return false;
-    } else if (endTime > maxEndTime) {
-      this.errorMessage = 'End time must not be more than 2 weeks after the start time.';
+    if (end <= start) {
+      this.errorMessage = 'End time must be after the start time.';
       return false;
     }
 
-    this.errorMessage = ''; 
+    if (end > maxEnd) {
+      this.errorMessage =
+        'End time must not be more than 2 weeks after the start time.';
+      return false;
+    }
+
+    if (this.selectedTourIds.size === 0) {
+      this.errorMessage = 'Please select at least one tour.';
+      return false;
+    }
+
+    this.errorMessage = '';
     return true;
+  }
+
+  // Reset after success (optional)
+  resetForm(): void {
+    this.sale = {
+      discount: 0,
+      startTime: new Date(),
+      endTime: new Date(),
+      tourIds: [],
+    };
+    this.selectedTourIds.clear();
+    this.setMinDateTime();
   }
 }
