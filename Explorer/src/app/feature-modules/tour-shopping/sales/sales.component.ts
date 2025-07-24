@@ -26,7 +26,7 @@ export class SalesComponent {
         this.salesService.getSales().subscribe({
             next: ( results: PagedResults<Sale> ) => {
                 this.sales =results.results
-                console.log("Sales:", this.sales); 
+                console.log("Sales:", this.sales);
             },
             error: () => {
                 console.log("ERROR LOADING SALES");
@@ -34,6 +34,20 @@ export class SalesComponent {
             }
         });
     }
+
+    formatForInput(dateStr: string): string {
+      const date = new Date(dateStr);
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+    onDateChange(event: Event, sale: Sale): void {
+  const input = event.target as HTMLInputElement;
+  sale.endTime = input.value;
+  this.onInputChange(sale); // reuse your existing method
+}
+
+
 
     onInputChange(sale: Sale): void {
         // If a sale is being updated, mark it as the modified one
