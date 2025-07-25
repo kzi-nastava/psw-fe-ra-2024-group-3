@@ -78,6 +78,11 @@ export class SaleCreationComponent implements OnInit {
 
   // Validate and submit sale
   submitSale(): void {
+     if (this.sale.discount > 100) {
+      alert('Discount cannot be greater than 100%.');
+      return;
+  }
+
     if (!this.isValid()) {
       console.warn('Invalid sale data:', this.errorMessage);
       return;
