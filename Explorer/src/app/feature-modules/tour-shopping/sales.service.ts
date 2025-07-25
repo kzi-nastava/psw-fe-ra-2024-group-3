@@ -11,6 +11,10 @@ import { PagedResults } from "src/app/shared/model/paged-results.model";
 export class SaleService {
     constructor(private http: HttpClient) {}
 
+    getSalesByAuthorId(authorId: number): Observable<PagedResults<Sale>> {
+        return this.http.get<PagedResults<Sale>>(environment.apiHost + 'author/sale/' + authorId)
+    }
+
     getSales(): Observable<PagedResults<Sale>> {
         return this.http.get<PagedResults<Sale>>(environment.apiHost + 'author/sale')
     }

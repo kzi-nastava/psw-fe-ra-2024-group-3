@@ -4,6 +4,8 @@ import { SaleService } from '../sales.service';
 import { TourExecutionService } from '../../tour-execution/tour-execution.service';
 import { Tour } from '../../tour-authoring/model/tour.model';
 import { PagedResults } from 'src/app/shared/model/paged-results.model';
+import { TokenStorage } from 'src/app/infrastructure/auth/jwt/token.service';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Component({
   selector: 'xp-sales-creation',
@@ -13,7 +15,9 @@ import { PagedResults } from 'src/app/shared/model/paged-results.model';
 export class SaleCreationComponent {
     constructor(
         private salesService: SaleService,
-        private tourService: TourExecutionService
+        private tourService: TourExecutionService,
+        private tokenStorage: TokenStorage,
+        
     ) {}
 
   // Sale data based on the Sale interface
@@ -21,6 +25,7 @@ export class SaleCreationComponent {
     discount: 0,
     startTime: new Date(), 
     endTime: new Date(),
+    authorId: 0,
     tourIds: []
   };
 
@@ -33,6 +38,9 @@ export class SaleCreationComponent {
   errorMessage: string = '';
 
   ngOnInit(){
+    const accessToken = this.tokenStorage.getAccessToken() || '';
+    const jwtHelperService = new JwtHelperService();
+    this.sale.authorId = jwtHelperService.decodeToken(accessToken).id;
     this.getPublishedTours()
   }
 
